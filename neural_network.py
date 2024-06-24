@@ -11,9 +11,6 @@ class NeuralNetwork:
         self.weights_hidden1_hidden2 = np.random.randn(self.hidden_size1, self.hidden_size2) * np.sqrt(2.0 / self.hidden_size1)
         self.weights_hidden2_output = np.random.randn(self.hidden_size2, self.output_size) * np.sqrt(2.0 / self.hidden_size2)
     
-    def sigmoid(self, x):
-        return 1 / (1 + np.exp(-np.clip(x, -500, 500)))
-    
     def softmax(self, x):
         e_x = np.exp(x - np.max(x))
         return e_x / e_x.sum(axis=0)

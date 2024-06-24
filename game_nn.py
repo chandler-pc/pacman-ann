@@ -18,7 +18,7 @@ class Game_NN:
         self.YELLOW = (255, 255, 0)
         self.BLUE = (0, 0, 255)
         self.maze = Maze(self.screen, self.BlOCK_SIZE)
-        self.initial_x, self.initial_y = random.randint(0,27) *self.BlOCK_SIZE, random.randint(0,30)*self.BlOCK_SIZE
+        self.initial_x, self.initial_y = 7 * self.BlOCK_SIZE, 1 * self.BlOCK_SIZE
         while self.maze.maze[int(self.initial_y/self.BlOCK_SIZE)][int(self.initial_x/self.BlOCK_SIZE)] == '1' or self.maze.maze[int(self.initial_y/self.BlOCK_SIZE)][int(self.initial_x/self.BlOCK_SIZE)] == '=' or self.maze.maze[int(self.initial_y/self.BlOCK_SIZE)][int(self.initial_x/self.BlOCK_SIZE)] == 'X':
             self.initial_x, self.initial_y = random.randint(0,27) *self.BlOCK_SIZE, random.randint(0,30)*self.BlOCK_SIZE
         self.pacman = Pacman(self.initial_x, self.initial_y, self.PACMAN_SIZE, 100)
@@ -32,8 +32,14 @@ class Game_NN:
         self.nn = nn
 
         self.time_simulation = time_simulation
-        self.infinite_time = infinite_time
+        self.infinite_time = infinite_time    
+        
+        self.previous_direction = None
+        self.change_count = 0  # Contador de cambios de dirección
+        self.time_since_last_reward = 0  # Tiempo desde la última recompensa por cambio de dirección
+        self.min_time_between_rewards = 1  # Tiempo mínimo entre recompensas por cambio de dirección (en segundos)
 
+        
     def run(self):
         while self.running and self.time_simulation > 0:
             for event in pygame.event.get():
@@ -53,6 +59,18 @@ class Game_NN:
             elif direction == 3:
                 self.pacman.set_direction(pygame.K_DOWN)
 
+            # Premio por cambio de dirección
+            self.time_since_last_reward += 1 / 60  # Incrementar el tiempo desde la última recompensa
+            if self.previous_direction is not None and self.previous_direction != direction:
+                if self.time_since_last_reward >= self.min_time_between_rewards:
+                    reward = np.clip(4 - self.change_count, 0, 4)  # Utilizar np.clip para asegurar el rango
+                    self.points += reward
+                    self.change_count += 1
+                    self.time_since_last_reward = 0  # Reiniciar el tiempo desde la última recompensa
+                    if reward > 0:
+                        print(f"Change direction reward: {reward:.2f}")
+            self.previous_direction = direction  # Actualizar la dirección anterior
+            
             self.screen.fill(self.BLACK)
             self.pacman.move()
             check_point = self.maze.check_point(self.pacman.x, self.pacman.y, self.pacman.size)
@@ -69,7 +87,7 @@ class Game_NN:
                 self.time_simulation = 1
                 print("No time limit")
             else:
-                print("Time remaining: ", self.time_simulation, end="\r")
+                print(f"Time remaining: {self.time_simulation:.2f}", end="\r")
             self.clock.tick(60)
         pygame.quit()
 

@@ -19,6 +19,7 @@ class GeneticAlgorithm:
         self.hidden_size2 = hidden_size2
         self.output_size = output_size
         self.population = [NeuralNetwork(input_size, hidden_size1, hidden_size2, output_size) for _ in range(population_size)]
+        self.best_individuals = []
     
     # Método que muta la red neuronal
     # No se realizan cambios
@@ -52,27 +53,27 @@ class GeneticAlgorithm:
                     
 
     # Método que realiza el cruce de dos redes neuronales
-    def crossover(self, parent1, parent2):
-        child = NeuralNetwork(self.input_size, self.hidden_size1, self.hidden_size2, self.output_size)
-        for i in range(parent1.weights_input_hidden1.shape[0]):
-            for j in range(parent1.weights_input_hidden1.shape[1]):
-                if random.random() > 0.5:
-                    child.weights_input_hidden1[i][j] = parent1.weights_input_hidden1[i][j]
-                else:
-                    child.weights_input_hidden1[i][j] = parent2.weights_input_hidden1[i][j]
-        for i in range(parent1.weights_hidden1_hidden2.shape[0]):
-            for j in range(parent1.weights_hidden1_hidden2.shape[1]):
-                if random.random() > 0.5:
-                    child.weights_hidden1_hidden2[i][j] = parent1.weights_hidden1_hidden2[i][j]
-                else:
-                    child.weights_hidden1_hidden2[i][j] = parent2.weights_hidden1_hidden2[i][j]
-        for i in range(parent1.weights_hidden2_output.shape[0]):
-            for j in range(parent1.weights_hidden2_output.shape[1]):
-                if random.random() > 0.5:
-                    child.weights_hidden2_output[i][j] = parent1.weights_hidden2_output[i][j]
-                else:
-                    child.weights_hidden2_output[i][j] = parent2.weights_hidden2_output[i][j]
-        return child
+    # def crossover(self, parent1, parent2):
+    #     child = NeuralNetwork(self.input_size, self.hidden_size1, self.hidden_size2, self.output_size)
+    #     for i in range(parent1.weights_input_hidden1.shape[0]):
+    #         for j in range(parent1.weights_input_hidden1.shape[1]):
+    #             if random.random() > 0.5:
+    #                 child.weights_input_hidden1[i][j] = parent1.weights_input_hidden1[i][j]
+    #             else:
+    #                 child.weights_input_hidden1[i][j] = parent2.weights_input_hidden1[i][j]
+    #     for i in range(parent1.weights_hidden1_hidden2.shape[0]):
+    #         for j in range(parent1.weights_hidden1_hidden2.shape[1]):
+    #             if random.random() > 0.5:
+    #                 child.weights_hidden1_hidden2[i][j] = parent1.weights_hidden1_hidden2[i][j]
+    #             else:
+    #                 child.weights_hidden1_hidden2[i][j] = parent2.weights_hidden1_hidden2[i][j]
+    #     for i in range(parent1.weights_hidden2_output.shape[0]):
+    #         for j in range(parent1.weights_hidden2_output.shape[1]):
+    #             if random.random() > 0.5:
+    #                 child.weights_hidden2_output[i][j] = parent1.weights_hidden2_output[i][j]
+    #             else:
+    #                 child.weights_hidden2_output[i][j] = parent2.weights_hidden2_output[i][j]
+    #     return child
     
     # Método de cruce de un solo punto
     # Mejoras:
@@ -80,44 +81,51 @@ class GeneticAlgorithm:
     # - Explotacion de patrones existentes: Mantiene segmentos ya explorados de los padres
     # - Exploración de nuevos patrones: Introduce variabilidad en la descendencia
     # - Reduce la complejidad del algoritmo: Simplifica el cruce de los pesos de la red neuronal
-    # def crossover(self, parent1, parent2):
-    #     # Crea un hijo con las mismas dimensiones que los padres
-    #     child = NeuralNetwork(self.input_size, self.hidden_size1, self.hidden_size2, self.output_size)
-    #     # Definir el punto de cruce
-    #     point = random.randint(0, parent1.weights_input_hidden1.size)
-    #     # Realizar el cruce de un solo punto para la primera capa oculta
-    #     flat1 = parent1.weights_input_hidden1.flatten() # Array de una dimensión
-    #     flat2 = parent2.weights_input_hidden1.flatten() # Array de una dimensión
-    #     child_flat = np.concatenate([flat1[:point], flat2[point:]])
-    #     child.weights_input_hidden1 = child_flat.reshape(parent1.weights_input_hidden1.shape)
-    #     # Cruce de un solo punto para la segunda capa oculta
-    #     point = random.randint(0, parent1.weights_hidden1_hidden2.size)
-    #     flat1 = parent1.weights_hidden1_hidden2.flatten()
-    #     flat2 = parent2.weights_hidden1_hidden2.flatten()
-    #     child_flat = np.concatenate([flat1[:point], flat2[point:]])
-    #     child.weights_hidden1_hidden2 = child_flat.reshape(parent1.weights_hidden1_hidden2.shape)
-    #     # Cruce de un solo punto para la capa de salida
-    #     point = random.randint(0, parent1.weights_hidden2_output.size)
-    #     flat1 = parent1.weights_hidden2_output.flatten()
-    #     flat2 = parent2.weights_hidden2_output.flatten()
-    #     child_flat = np.concatenate([flat1[:point], flat2[point:]])
-    #     child.weights_hidden2_output = child_flat.reshape(parent1.weights_hidden2_output.shape)
-    #     return child
+    def crossover(self, parent1, parent2):
+        # Crea un hijo con las mismas dimensiones que los padres
+        child = NeuralNetwork(self.input_size, self.hidden_size1, self.hidden_size2, self.output_size)
+        
+        # Selecciona un punto de cruce al azar
+        point = random.randint(0, parent1.weights_input_hidden1.size)
+        
+        # Aplana los pesos de la capa de entrada a la primera capa oculta de los padres
+        flat1 = parent1.weights_input_hidden1.flatten()
+        flat2 = parent2.weights_input_hidden1.flatten()
+        child_flat = np.concatenate([flat1[:point], flat2[point:]])
+        child.weights_input_hidden1 = child_flat.reshape(parent1.weights_input_hidden1.shape)
+
+        point = random.randint(0, parent1.weights_hidden1_hidden2.size)
+        flat1 = parent1.weights_hidden1_hidden2.flatten()
+        flat2 = parent2.weights_hidden1_hidden2.flatten()
+        child_flat = np.concatenate([flat1[:point], flat2[point:]])
+        child.weights_hidden1_hidden2 = child_flat.reshape(parent1.weights_hidden1_hidden2.shape)
+
+        point = random.randint(0, parent1.weights_hidden2_output.size)
+        flat1 = parent1.weights_hidden2_output.flatten()
+        flat2 = parent2.weights_hidden2_output.flatten()
+        child_flat = np.concatenate([flat1[:point], flat2[point:]])
+        child.weights_hidden2_output = child_flat.reshape(parent1.weights_hidden2_output.shape)
+
+        return child
 
     # Método que evoluciona la población
-    # Mejorar elitismo
+    # Mejorar con elitismo
     def evolve(self, fitness_scores, mutation_rate=0.2, tournament_size=3):
         new_population = []
-        for _ in range(self.population_size):
-            # Selecciona dos padres
-            parent1 = self.select(fitness_scores,tournament_size)
-            parent2 = self.select(fitness_scores,tournament_size)
-            # Realiza el cruce de los padres
+        
+        # Generar nuevos individuos mediante cruce y mutación para llenar la población
+        while len(new_population) < self.population_size:
+            parent1 = self.select(fitness_scores, tournament_size)
+            parent2 = self.select(fitness_scores, tournament_size)
             child = self.crossover(parent1, parent2)
-            # Realiza la mutación del hijo
             self.mutate(child, mutation_rate)
-            # Agrega el hijo a la nueva población
             new_population.append(child)
+        
+        # Almacenar la población y los puntajes de fitness de la generación actual
+        self.previous_population = self.population
+        self.previous_fitness_scores = fitness_scores
+
+        # Reemplazar la población actual con la nueva población
         self.population = new_population
     
     # Método de selección por torneo
