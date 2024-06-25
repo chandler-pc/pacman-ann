@@ -16,7 +16,7 @@ def run_genetic_algorithm(population_size, input_size, hidden_size1, hidden_size
         print(f"Generation: {generation}")
         fitness_scores = []
         for nn in ga.population:
-            game = Game_NN(nn, 10)
+            game = Game_NN(nn, 15)
             game.run()
             fitness_scores.append(game.points)
             print("Points:", game.points)

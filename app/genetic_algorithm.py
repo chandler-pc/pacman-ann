@@ -47,7 +47,7 @@ class GeneticAlgorithm:
 
     def apply_regularization(self, nn):
         for layer in nn.get_weights():
-            layer *= (1 - self.regularization_strength)
+            layer -= self.regularization_strength * layer
 
     def evolve(self, fitness_scores, tournament_size=3):
         new_population = []
