@@ -4,7 +4,7 @@ from app.neural_network import NeuralNetwork
 
 # Clase que implementa el algoritmo genético
 class GeneticAlgorithm:
-    def __init__(self, population_size, input_size, hidden_size1, hidden_size2, output_size, mutation_rate=0.01, regularization_strength=0.01):
+    def __init__(self, population_size, input_size, hidden_size1, hidden_size2, output_size, mutation_rate=0.05, regularization_strength=0.01):
         self.population_size = population_size
         self.input_size = input_size
         self.hidden_size1 = hidden_size1
@@ -63,6 +63,7 @@ class GeneticAlgorithm:
             child = self.crossover(parent1, parent2) # Cruce para combinar información genética
             self.mutate(child) # Mutación para introducir variabilidad
             self.apply_regularization(child) # Regularización para evitar overfitting
+            new_population.append(child) # Agregar hijo a la nueva población
             
         # Aplicar regularización L2 a la nueva población
         for nn in new_population:

@@ -9,7 +9,7 @@ from app.genetic_algorithm import GeneticAlgorithm
 # Ejecutar algoritmo genético
 def run_genetic_algorithm(population_size, input_size, hidden_size1, hidden_size2, output_size, generations, tournament_size):
     
-    ga = GeneticAlgorithm(population_size, input_size, hidden_size1, hidden_size2, output_size, mutation_rate=0.05)
+    ga = GeneticAlgorithm(population_size, input_size, hidden_size1, hidden_size2, output_size)
     metrics = []
     
     for generation in range(generations):
@@ -84,12 +84,12 @@ def save_metrics_graph(metrics):
 
 def main():
     # Parámetros del algoritmo genético
-    population_size = 60 # Número de individuos en la población
+    population_size = 30 # Número de individuos en la población
     input_size = 6 # Número de entradas
     hidden_size1 = 16 # Número de neuronas en la primera capa oculta
     hidden_size2 = 8 # Número de neuronas en la segunda capa oculta
     output_size = 4 # Número de salidas
-    generations = 42 # Número de generaciones
+    generations = 30 # Número de generaciones
     tournament_size = 10  # Tamaño del torneo
 
     # Ejecutar algoritmo genético

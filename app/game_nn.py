@@ -5,7 +5,7 @@ from app.maze import Maze
 from app.pacman import Pacman
 
 class Game_NN:
-    def __init__(self, nn, velocity=100, time_simulation=30, infinite_time=False):
+    def __init__(self, nn, velocity=100, time_simulation=30, infinite_time=False, initial_x=None, initial_y=None):
         pygame.init()
 
         self.PACMAN_SIZE = 30
@@ -18,7 +18,10 @@ class Game_NN:
         self.YELLOW = (255, 255, 0)
         self.BLUE = (0, 0, 255)
         self.maze = Maze(self.screen, self.BlOCK_SIZE)
-        self.initial_x, self.initial_y = random.randint(0,27) *self.BlOCK_SIZE, random.randint(0,30)*self.BlOCK_SIZE
+        if initial_x is not None and initial_y is not None:
+            self.initial_x, self.initial_y = initial_x * self.BlOCK_SIZE, initial_y * self.BlOCK_SIZE
+        else:
+            self.initial_x, self.initial_y = random.randint(0,27) *self.BlOCK_SIZE, random.randint(0,30)*self.BlOCK_SIZE
         while self.maze.maze[int(self.initial_y/self.BlOCK_SIZE)][int(self.initial_x/self.BlOCK_SIZE)] == '1' or self.maze.maze[int(self.initial_y/self.BlOCK_SIZE)][int(self.initial_x/self.BlOCK_SIZE)] == '=' or self.maze.maze[int(self.initial_y/self.BlOCK_SIZE)][int(self.initial_x/self.BlOCK_SIZE)] == 'X':
             self.initial_x, self.initial_y = random.randint(0,27) *self.BlOCK_SIZE, random.randint(0,30)*self.BlOCK_SIZE
         self.pacman = Pacman(self.initial_x, self.initial_y, self.PACMAN_SIZE, 100, self.maze)

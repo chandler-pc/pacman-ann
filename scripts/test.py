@@ -8,8 +8,8 @@ def load_best_nn(name_file='best_nn.pkl'):
     return pickle.load(open(best_nn_path, "rb"))
 
 def main():
-    best_nn = load_best_nn('best_nn.pkl')
-    game = Game_NN(best_nn)
+    best_nn = load_best_nn('backups\\20240626_0424.best_nn.pkl')
+    game = Game_NN(best_nn, initial_x=14, initial_y=23)
     game.run()
     
 if __name__ == "__main__":
