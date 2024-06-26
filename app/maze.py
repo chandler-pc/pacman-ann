@@ -41,14 +41,15 @@ class Maze:
             (x, y + pacman_size),
             (x + pacman_size, y + pacman_size)
         ]
-        for i, corner in enumerate(corners):
+        for _, corner in enumerate(corners):
             corner_x, corner_y = corner
             row = int(corner_y // self.BLOCK_SIZE)
             col = int(corner_x // self.BLOCK_SIZE)
-            pygame.draw.circle(self.screen, (255,0,0), (corner_x, corner_y), 2)
+            pygame.draw.circle(self.screen, (255,0,0), (corner_x, corner_y), 1)
             if self.maze[row][col] == '1':
                 return True
         return False
+    
     def check_point(self, x, y, pacman_size):
         corners = [
             (x, y),
@@ -56,7 +57,7 @@ class Maze:
             (x, y + pacman_size),
             (x + pacman_size, y + pacman_size)
         ]
-        for i, corner in enumerate(corners):
+        for _, corner in enumerate(corners):
             corner_x, corner_y = corner
             row = int(corner_y // self.BLOCK_SIZE)
             col = int(corner_x // self.BLOCK_SIZE)

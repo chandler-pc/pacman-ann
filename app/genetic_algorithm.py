@@ -20,7 +20,6 @@ class GeneticAlgorithm:
                 for j in range(layer.shape[1]):
                     if random.random() < self.mutation_rate:
                         layer[i][j] += np.random.randn()
-        self.apply_regularization(nn)
 
     def crossover(self, parent1, parent2):
         child = NeuralNetwork(self.input_size, self.hidden_size1, self.hidden_size2, self.output_size)
@@ -42,7 +41,6 @@ class GeneticAlgorithm:
                 for i in range(rows):
                     for j in range(crossover_point, cols):
                         layer_child[i][j] = layer2[i][j]
-        self.apply_regularization(child)
         return child
 
     def apply_regularization(self, nn):
@@ -53,19 +51,22 @@ class GeneticAlgorithm:
         new_population = []
         # Elitismo: mantener los mejores individuos
         elite_size = int(0.1 * self.population_size)
-        # Seleccionar los índices de los mejores individuos
         elite_indices = np.argsort(fitness_scores)[-elite_size:]
-        # Seleccionar los mejores individuos
+        print("Elite indices:", elite_indices) # Imprimir los índices de los mejores individuos
         elite_individuals = [self.population[i] for i in elite_indices]
-        # Agregar los mejores individuos a la nueva población
+        
         new_population.extend(elite_individuals)
 
         for _ in range(self.population_size - elite_size):
-            parent1 = self.select(fitness_scores, tournament_size)
-            parent2 = self.select(fitness_scores, tournament_size)
-            child = self.crossover(parent1, parent2)
-            self.mutate(child)
-            new_population.append(child)
+            parent1 = self.select(fitness_scores, tournament_size) # Selección de padres
+            parent2 = self.select(fitness_scores, tournament_size) # Selección de padres
+            child = self.crossover(parent1, parent2) # Cruce para combinar información genética
+            self.mutate(child) # Mutación para introducir variabilidad
+            self.apply_regularization(child) # Regularización para evitar overfitting
+            
+        # Aplicar regularización L2 a la nueva población
+        for nn in new_population:
+            self.apply_regularization(nn)
 
         self.population = new_population
 
